@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Calculator || JUNAYEDUR RAHMAN</title>
+  <style>
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: rgba(10, 10, 10, 1);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    /* Calculator styling */
+    .calculator {
+      width: 100%;
+      max-width: 360px;
+      background-color: rgba(30, 30, 30, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7);
+      margin-bottom: 20px; /* Space between calculator and footer */
+    }
+
+    /* Expression display */
+    .display {
+      margin-bottom: 15px;
+    }
+
+    .expression {
+      font-size: 45px;
+      color: rgba(200, 200, 200, 0.9);
+      text-align: right;
+      overflow-x: auto;
+      white-space: nowrap;
+      transition: all 0.3s ease-in-out;
+      font-weight: bold;
+    }
+
+    .result {
+      font-size: 28px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: right;
+      transition: all 0.3s ease-in-out;
+    }
+
+    /* Animation for the result after "=" */
+    .result.animate {
+      font-size: 36px;
+      color: rgba(255, 165, 0, 1);
+      font-weight: bolder;
+      transform: scale(1.1);
+      transition: all 0.5s ease-in-out;
+    }
+
+    /* Buttons layout */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    /* Buttons styling */
+    button {
+      height: 55px;
+      font-size: 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: rgba(68, 68, 68, 0.9);
+      color: rgba(255, 255, 255, 0.8);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    button:hover {
+      background-color: rgba(85, 85, 85, 1);
+      transform: scale(1.05);
+    }
+
+    button:last-child {
+      background-color: rgba(255, 140, 0, 0.9);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    button:last-child:hover {
+      background-color: rgba(255, 165, 0, 1);
+      transform: scale(1.1);
+    }
+
+    /* Footer styling */
+    footer {
+      width: 100%;
+      padding: 15px 20px;
+      background-color: rgba(50, 50, 50, 0.9);
+      color: rgba(200, 200, 200, 0.9);
+      font-size: 16px;
+      text-align: center;
+      box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.5);
+      border-radius: 8px 8px 0 0;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+    }
+
+    /* Responsive adjustments for footer */
+    @media (max-width: 600px) {
+      footer {
+        font-size: 14px;
+        padding: 10px;
+      }
+    }
+
+    /* Mobile responsive design for calculator */
+    @media (max-width: 400px) {
+      .calculator {
+        padding: 15px;
+      }
+
+      button {
+        height: 50px;
+        font-size: 18px;
+      }
+
+      .expression, .result {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display">
+      <div class="expression" id="expression"></div>
+      <div class="result" id="result">0</div>
+    </div>
+    <div class="buttons">
+      <button onclick="clearScreen()">AC</button>
+      <button onclick="appendValue('%')">%</button>
+      <button onclick="deleteLast()">←</button>
+      <button onclick="appendValue('/')">÷</button>
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button onclick="appendValue('*')">×</button>
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button onclick="appendValue('-')">−</button>
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+      <button onclick="appendValue('+')">+</button>
+      <button onclick="appendValue('00')">00</button>
+      <button onclick="appendValue('0')">0</button>
+      <button onclick="appendValue('.')">.</button>
+      <button onclick="calculate()">=</button>
+    </div>
+  </div>
+  <footer>
+    <p>© 2024. All rights reserved. | Designed by JUNAYEDUR RAHMAN</p>
+  </footer>
+
+  <script>
+    const expressionElement = document.getElementById("expression");
+    const resultElement = document.getElementById("result");
+    let expression = "";
+
+    function clearScreen() {
+      expression = "";
+      updateDisplay();
+    }
+
+    function appendValue(value) {
+      expression += value;
+      updateDisplay();
+    }
+
+    function deleteLast() {
+      expression = expression.slice(0, -1);
+      updateDisplay();
+    }
+
+    function calculate() {
+      try {
+        const result = eval(expression);
+        expression = result.toString();
+        updateDisplay(true); // Pass true to trigger animation
+      } catch {
+        resultElement.textContent = "Error";
+      }
+    }
+
+    function updateDisplay(animate = false) {
+      expressionElement.textContent = expression;
+      try {
+        const result = eval(expression);
+        resultElement.textContent = result || "0";
+        if (animate) {
+          resultElement.classList.add("animate");
+          setTimeout(() => {
+            resultElement.classList.remove("animate");
+          }, 500); // Animation lasts 500ms
+        }
+      } catch {
+        resultElement.textContent = "0";
+      }
+    }
+  </script>
+</body>
+</html>
